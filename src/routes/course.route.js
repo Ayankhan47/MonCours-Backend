@@ -3,7 +3,7 @@ import verifyToken from '../middleware/verifyToken.js';
 import identifyRole from '../middleware/identifyRole.js';
 import {getCourses, createCourse, deleteCourse, updateCourse} from '../controllers/course.controller.js';
 import {enrollCourse, getEnrolledCourses, unenrollCourse} from '../controllers/enrollment.controller.js';
-import {getAllLectures , createLecture} from '../controllers/lecture.controller.js';
+import {getAllLectures , createLecture, updateLecture, deleteLecture} from '../controllers/lecture.controller.js';
 
 const router = express.Router();
 
@@ -14,6 +14,8 @@ router.patch('/updatecourse/:courseId',verifyToken,identifyRole("admin","instruc
 router.post('/enroll/:courseId',verifyToken,identifyRole("student","instructor"), enrollCourse);
 router.get('/enrolledcourses',verifyToken, identifyRole("student","instructor"),getEnrolledCourses);
 router.delete('/unenroll/:courseId',verifyToken, identifyRole("student","instructor"),unenrollCourse);
-router.get('/:courseId/lectures',verifyToken, identifyRole("student","instructor"),getAllLectures);
-router.post('/:courseId/lectures',verifyToken, identifyRole("instructor","admin"),createLecture);
+router.get('/:courseId/getlectures',verifyToken, identifyRole("student","instructor"),getAllLectures);
+router.post('/:courseId/createlecture',verifyToken, identifyRole("instructor","admin"),createLecture);
+router.patch('/:courseId/updatelecture/:lectureId',verifyToken, identifyRole("instructor", "admin"),updateLecture);
+router.delete('/:courseId/deletelecture/:lectureId',verifyToken, identifyRole("instructor", "admin"),deleteLecture);
 export default router;

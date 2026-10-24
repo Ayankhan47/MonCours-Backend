@@ -1,6 +1,5 @@
 import lectureModel from '../models/lecture.model.js';
 import courseModel from '../models/course.model.js';
-import e from 'express';
 
 export const getAllLectures = async (req, res)=>{
     try{
@@ -41,7 +40,7 @@ export const createLecture = async (req, res) => {
         }
     if (req.user.role !== "admin" && course.createdBy.toString() !== req.user.id) {
       return res.status(403).json({
-        message: "You can only add lectures to your own course."
+        message: "Unauthorized : You can only add lectures to your own course."
       });
     }
         const Lecture = await lectureModel.create({
@@ -66,15 +65,33 @@ export const createLecture = async (req, res) => {
 
 export const updateLecture = async (req, res) => {
     try{
-        const {LectureId} = req.params;
+        const {lectureId} = req.params;
         const{title, description, videoURL} = req.body;
-        const Lecture = await LectureModel.findById(LectureId);
+        const Lecture = await lectureModel.findById(lectureId);
         if(!Lecture){
             return res.status(404).json({
                 success:false,
                 message: "Lecture not Found"
             })
         }
+        if(req.user.role !== "admin" && course.createdBy.toString() !== req.user.id){
+            return res.status(403).json({
+                success:false,
+                message : "Unauthorized : You can only update your own lecture"
+            })
+        }
+        const UpdatedLecture = await lectureModel.findByIdAndUpdate(lectureId,
+            {
+                ...(title && {title}),
+                ...(description && {description}),
+                ...(videoURL && {videoURL})
+            },{returnDocument: "after"});
+
+            res.status(200).json({
+                success:true,
+                message: "Lecture updated successfully",
+                data: UpdatedLecture
+            })
     }catch(error){
         res.status(500).json({
             success:false,
@@ -86,15 +103,21 @@ export const updateLecture = async (req, res) => {
 
 export const deleteLecture = async (req, res) =>{
     try{
-        const {LectureId} = req.params;
-        const Lecture = await LectureModel.findById(LectureId);
+        const {lectureId} = req.params;
+        const Lecture = await lectureModel.findById(lectureId);
         if(!Lecture){
             return res.status(404).json({
                 success:false,
                 message: "Lecture not Found"
             })
         }
-        await LectureModel.findByIdAnddelete(LectureId);
+        if(req.user.role !== "admin" && Lecture.createdBy.toString() !== req.user.id){
+            return res.status(403).json({
+                success:false,
+                message : "Unauthorized : You can only delete your own lecture"
+            })
+        }
+        await lectureModel.findByIdAndDelete(lectureId);
         res.status(200).json({
             success:true,
             message: "Lecture deleted successfully",
