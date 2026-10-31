@@ -1,7 +1,7 @@
 import enrollmentModel from "../models/enrollment.model.js";
 import courseModel from "../models/course.model.js";
 
-export const enrollCourse = async (req, res) => {
+export const enrollCourse = async (req, res, next) => {
   const { courseId } = req.params;
   try {
     const course = await courseModel.findById(courseId);
@@ -28,28 +28,30 @@ export const enrollCourse = async (req, res) => {
       data: enrollment,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error,
-    });
+    next(error);
   }
 };
-export const getEnrolledCourses = async (req, res) => {
+export const getEnrolledCourses = async (req, res, next) => {
   try {
     const enrollments = await enrollmentModel
       .find({ studentId: req.user.id })
       .populate("courseId", "title description price category");
 
     res.status(200).json({
+      count: enrollments.length,
       message: "Enrolled course fetched successfully",
       data: enrollments,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+   if (error.code === 11000) {
+     const duplicateEnrollmentError = new Error("You are already enrolled in this course");
+     duplicateEnrollmentError.statusCode = 409;
+     return next(duplicateEnrollmentError);
+   }
+   next(error);
   }
 };
-export const unenrollCourse = async (req, res) => {
+export const unenrollCourse = async (req, res, next) => {
   try {
     const course = await courseModel.findById(req.params.courseId);
     if (!course) {
@@ -71,8 +73,6 @@ export const unenrollCourse = async (req, res) => {
         message: "Unenrolled Successfully",
       });
   } catch (error) {
-    res.status(500).json({
-      message: error,
-    });
+    next(error);
   }
 };

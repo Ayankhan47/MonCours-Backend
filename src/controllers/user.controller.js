@@ -2,11 +2,11 @@ import userModel from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
 import generateToken from '../utils/generateToken.js';
 
-export const registerUser = async (req, res) => {
-    const password = req.body.password;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const isUserExist = await userModel.findOne({ email: req.body.email });
+export const registerUser = async (req, res, next) => {
     try{
+        const password = req.body.password;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const isUserExist = await userModel.findOne({ email: req.body.email });
         if(isUserExist){
             return res.status(400).json({
                 message: "User already exists"
@@ -27,14 +27,11 @@ export const registerUser = async (req, res) => {
             token: token
         })
     } catch (error) {
-        res.status(500).json({
-            message: "Error registering user",
-            error: error
-        })
+        next(error);
     }
 }
 
-export const loginUser = async (req, res) => {
+export const loginUser = async (req, res, next) => {
     try{
         const user = await userModel.findOne({ email: req.body.email });
         if(!user){
@@ -58,14 +55,11 @@ export const loginUser = async (req, res) => {
             }
         }
     }catch(error){
-        res.status(500).json({
-            message: "Error logging in",
-            error: error
-        })
+        next(error);
     }
 }
 
-export const getProfile = async (req, res) =>{
+export const getProfile = async (req, res, next) =>{
     try{
 
         const user = await userModel.findById(req.user.id)
@@ -79,8 +73,6 @@ export const getProfile = async (req, res) =>{
             user: user
         })
     }catch(error){
-        res.status(500).json({
-            message:error.message
-        })
+        next(error);
     }
 }

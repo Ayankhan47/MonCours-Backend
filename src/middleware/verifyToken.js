@@ -11,7 +11,8 @@ const verifyToken = (req, res, next)=>{
 
         next();
     } catch (error) {
-        return res.status(401).json({ message: error.message });
+        error.statusCode = 401;
+        next(error);
     }
 }
 

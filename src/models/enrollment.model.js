@@ -15,6 +15,10 @@ const enrollmentSchema = new mongoose.Schema({
         default: Date.now
     }
 }) 
+enrollmentSchema.index(
+  { studentId: 1, courseId: 1 },
+  { unique: true }
+);
 
 const enrollmentModel = mongoose.model("Enrollment", enrollmentSchema);
 export default enrollmentModel;

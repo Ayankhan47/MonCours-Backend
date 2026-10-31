@@ -1,7 +1,7 @@
 import lectureModel from '../models/lecture.model.js';
 import courseModel from '../models/course.model.js';
 
-export const getAllLectures = async (req, res)=>{
+export const getAllLectures = async (req, res, next)=>{
     try{
         const{courseId}= req.params;
         const course = await courseModel.findById(courseId);
@@ -18,15 +18,11 @@ export const getAllLectures = async (req, res)=>{
             Lectures  
         })
     } catch(error){
-        res.status(500).json({
-            success:false,
-            message: "Internal Server Error",
-            error: error.message
-        })
+        next(error);
     }
 }
 
-export const createLecture = async (req, res) => {
+export const createLecture = async (req, res, next) => {
     try{
         const { title, description, videoURL} = req.body;
         const {courseId} = req.params;
@@ -55,15 +51,11 @@ export const createLecture = async (req, res) => {
             data : Lecture
         })
     } catch(error){
-        res.status(500).json({
-            success:false,
-            message: "Internal Server Error",
-            error: error.message
-        })
+        next(error);
     }
 }
 
-export const updateLecture = async (req, res) => {
+export const updateLecture = async (req, res, next) => {
     try{
         const {lectureId} = req.params;
         const{title, description, videoURL} = req.body;
@@ -93,15 +85,11 @@ export const updateLecture = async (req, res) => {
                 data: UpdatedLecture
             })
     }catch(error){
-        res.status(500).json({
-            success:false,
-            message: "Internal Server Error",
-            error: error.message
-        })
+        next(error);
     }
 }
 
-export const deleteLecture = async (req, res) =>{
+export const deleteLecture = async (req, res, next) =>{
     try{
         const {lectureId} = req.params;
         const Lecture = await lectureModel.findById(lectureId);
@@ -125,9 +113,6 @@ export const deleteLecture = async (req, res) =>{
         })
 
     }catch(error){
-        res.status(500).json({
-            success:false,
-            error: error.message
-        })
+        next(error);
     }
 }
