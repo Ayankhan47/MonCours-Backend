@@ -69,7 +69,7 @@ export const updateLecture = async (req, res, next) => {
         if(req.user.role !== "admin" && course.createdBy.toString() !== req.user.id){
             return res.status(403).json({
                 success:false,
-                message : "Unauthorized : You can only update your own lecture"
+                message : "Unauthorized : You can only update your own course's lectures"
             })
         }
         const UpdatedLecture = await lectureModel.findByIdAndUpdate(lectureId,
@@ -99,10 +99,10 @@ export const deleteLecture = async (req, res, next) =>{
                 message: "Lecture not Found"
             })
         }
-        if(req.user.role !== "admin" && Lecture.createdBy.toString() !== req.user.id){
+        if(req.user.role !== "admin" && course.createdBy.toString() !== req.user.id){
             return res.status(403).json({
                 success:false,
-                message : "Unauthorized : You can only delete your own lecture"
+                message : "Unauthorized : You can only delete your own course's lectures"
             })
         }
         await lectureModel.findByIdAndDelete(lectureId);

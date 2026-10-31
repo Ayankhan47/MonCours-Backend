@@ -126,14 +126,18 @@ export const updateCourse = async (req, res, next) => {
     const updated = await courseModel.findByIdAndUpdate(
       req.params.courseId,
       {
-        ...(req.body.title && { title: req.body.title }),
-        ...(req.body.description && { description: req.body.description }),
-        ...(req.body.thumbnail && { thumbnail: req.body.thumbnail }),
-        ...(req.body.price && { price: req.body.price }),
-        ...(req.body.category && { category: req.body.category }),
+        ...(req.body.title !== undefined && { title: req.body.title }),
+        ...(req.body.description !== undefined && {
+          description: req.body.description,
+        }),
+        ...(req.body.thumbnail !== undefined && {
+          thumbnail: req.body.thumbnail,
+        }),
+        ...(req.body.price !== undefined && { price: Number(req.body.price) }),
+        ...(req.body.category !== undefined && { category: req.body.category }),
         updatedAt: Date.now(),
       },
-      { returnDocument: "after" },
+      { returnDocument: "after", runValidators: true },
     );
     res.status(200).json({
       message: "Course updated successfully",

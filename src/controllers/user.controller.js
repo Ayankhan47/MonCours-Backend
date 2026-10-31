@@ -19,11 +19,18 @@ export const registerUser = async (req, res, next) => {
             password: hashedPassword,
 
         })
+        const safeUser ={
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role
+        }
         const token = generateToken(user);
         res.cookie("token", token);
         res.status(201).json({
             message: "User registered successfully",
             data: user,
+            safeUser: safeUser,
             token: token
         })
     } catch (error) {
@@ -50,6 +57,7 @@ export const loginUser = async (req, res, next) => {
                 res.status(200).json({
                     message: "login successful",
                     data: user,
+                    safeUser: safeUser,
                     token: token
                 })
             }
@@ -70,7 +78,8 @@ export const getProfile = async (req, res, next) =>{
         }
         res.status(200).json({
             message:"authorized User!",
-            user: user
+            user: user,
+            safeUser: safeUser
         })
     }catch(error){
         next(error);
