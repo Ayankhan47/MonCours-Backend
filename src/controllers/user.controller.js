@@ -12,9 +12,16 @@ export const registerUser = async (req, res, next) => {
         message: "User already exists",
       });
     }
+    if (!["student", "instructor"].includes(req.body.role)) {
+      return res.status(400).json({
+        message: "Invalid registration role",
+      });
+    }
+    const userRole =
+      req.body.role === "instructor" ? "pending_instructor" : "student";
     const user = await userModel.create({
       name: req.body.name,
-      role: "student",
+      role: userRole,
       email: req.body.email,
       password: hashedPassword,
     });
@@ -27,7 +34,10 @@ export const registerUser = async (req, res, next) => {
     const token = generateToken(user);
     res.cookie("token", token);
     res.status(201).json({
-      message: "User registered successfully",
+      message:
+        userRole === "pending_instructor"
+          ? "Registration successful. Awaiting admin approval."
+          : "User registered successfully",
       data: user,
       safeUser: safeUser,
       token: token,
@@ -82,5 +92,21 @@ export const getProfile = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+export const logoutUser = (req, res) =>{
+  try {
+    res.clearCookie("token");
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Logout failed",
+    });
   }
 };

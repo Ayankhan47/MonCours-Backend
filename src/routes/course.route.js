@@ -1,9 +1,7 @@
 import express from 'express';
 import verifyToken from '../middleware/verifyToken.js';
 import identifyRole from '../middleware/identifyRole.js';
-import validateCourse, {
-  validateCourseUpdate,
-} from '../middleware/validateCourse.js';
+import validateCourse,{validateCourseUpdate} from '../middleware/validateCourse.js';
 import validateObjectId from '../middleware/validateObjectId.js';
 import {getCourses, createCourse, deleteCourse, updateCourse} from '../controllers/course.controller.js';
 import {enrollCourse, getEnrolledCourses, unenrollCourse} from '../controllers/enrollment.controller.js';
@@ -11,7 +9,7 @@ import {getAllLectures , createLecture, updateLecture, deleteLecture} from '../c
 
 const router = express.Router();
 
-router.get('/getcourses',verifyToken, getCourses);
+router.get('/getcourses', getCourses);
 router.post('/createcourse',verifyToken,identifyRole("admin","instructor"),validateCourse, createCourse);
 router.delete('/deletecourse/:courseId',verifyToken,identifyRole("admin","instructor"), validateObjectId("courseId"), deleteCourse);
 router.patch('/updatecourse/:courseId',verifyToken,identifyRole("admin","instructor"), validateObjectId("courseId"), validateCourseUpdate,updateCourse);

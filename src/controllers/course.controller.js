@@ -45,11 +45,7 @@ export const getCourses = async (req, res, next) => {
       .populate("createdBy", "name email")
       .skip(skip)
       .limit(limit);
-    if (courses.length === 0) {
-      return res.status(404).json({
-        message: "No course found!",
-      });
-    }
+
     res.status(200).json({
       message: "Courses fetched successfully",
       data: courses,
